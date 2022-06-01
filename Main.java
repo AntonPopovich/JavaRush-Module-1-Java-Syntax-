@@ -30,7 +30,6 @@ public class Main
             else
                 System.out.println("Неверно указан режим работы. Пожалуйста, повторите ввод.");
                 input = sc.nextLine();
-                continue;
         }
         sc.close();
     }
