@@ -1,34 +1,68 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Encryption {
-        private static final char[] ALPHABET = {'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з',
-                'и','к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
-                'ъ', 'ы', 'ь', 'э', 'я', '.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '};
+    private static final char[] ALPHABET = {'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з',
+            'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
+            'ъ', 'ы', 'ь', 'э', 'ю', 'я', '.', ',', '«', '»', '"', '\'', ':', '!', '?', ' ', '-'};
+    private static final int ALPHABET_length = ALPHABET.length;
 
-        public static String isPartOfAlphabet(String text, int key) {
+    public static String encryption(String text, int key) {         // шифровка
 
-            String encryptedText = "";
+        String encryptedText = "";
 
+        for (int i = 0; i < text.length(); i++) {
+            for (int j = 0; j < ALPHABET.length; j++) {
+                if (Character.toLowerCase(text.charAt(i)) == ALPHABET[j]) {
+                    int shiftedKey = j + key;
+
+                    while (shiftedKey > ALPHABET.length - 1) {
+                        shiftedKey = shiftedKey - ALPHABET.length;
+                    }
+                    char encryptedLetter = ALPHABET[shiftedKey];
+
+                    if (Character.isUpperCase(text.charAt(i)))
+                        encryptedLetter = Character.toUpperCase(ALPHABET[shiftedKey]);
+
+                    encryptedText = encryptedText + encryptedLetter;
+                    break;
+                }
+            }
+        }
+        return encryptedText;
+    }
+
+    public static String decryption(String text, int key) throws ArrayIndexOutOfBoundsException {    // расшифровка
+
+        String decryptedText = "";
+
+        try {
             for (int i = 0; i < text.length(); i++) {
-                for (int j = 0; j < ALPHABET.length; j++) {
-                    if (Character.toLowerCase(text.charAt(i)) == ALPHABET[j]) {
-                        int shiftedKey = j + key;
 
-                        while (shiftedKey > ALPHABET.length - 1) {
-                            shiftedKey = shiftedKey - 40;
+                for (int j = 0; j < ALPHABET.length + 1; j++) {
+                    if (Character.toLowerCase(text.charAt(i)) == ALPHABET[j]) {
+                        int shiftedKey = j - key;
+
+                        while (shiftedKey < 0) {
+                            shiftedKey = shiftedKey + ALPHABET.length;
                         }
-                        char encryptedLetter = ALPHABET[shiftedKey];
+                        char decryptedLetter = ALPHABET[shiftedKey];
 
                         if (Character.isUpperCase(text.charAt(i)))
-                            encryptedLetter = Character.toUpperCase(ALPHABET[shiftedKey]);
+                            decryptedLetter = Character.toUpperCase(ALPHABET[shiftedKey]);
 
-                        encryptedText = encryptedText + encryptedLetter;
+                        decryptedText = decryptedText + decryptedLetter;
                         break;
                     }
                 }
             }
-            return encryptedText;
+        } catch (ArrayIndexOutOfBoundsException a) {
+            System.out.println("Предложенный текст не соответствует алфавиту!");
+            throw a;
         }
+        return decryptedText;
+    }
+
 
     public static int keyValidation() {
         System.out.println("Введите ключ: ");
@@ -44,17 +78,37 @@ public class Encryption {
                 key = sc.nextInt();
             }
         }
-        sc.close();
+
         return key;
     }
 
-            //TEST MAIN
-            public static void main (String[]args){
-                String encryptedText = "МеДвЕдЬ укусил вОрчуна!?:.,«»\'\"";
-                String df = "абв";
-                int key = keyValidation();
+    public static String bruteForce(String text) throws ArrayIndexOutOfBoundsException {
 
-                System.out.println(isPartOfAlphabet(encryptedText, key));
+        String decryptedText = "";
+        int shift = 0;
+        int maxCount = 0;
+
+        for (int j = 0; j < ALPHABET.length; j++) {
+
+            String iteration = decryption(text, j);
+            int count = 0;
+
+            for (int i = 0; i < iteration.length() - 1; i++) {
+                char index = iteration.charAt(i);
+                char nextIndex = iteration.charAt(i + 1); // '.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '
+                if (index == ' ' && nextIndex != '.' && nextIndex != '-' &&
+                        nextIndex != ',' && nextIndex != '«' &&
+                        nextIndex != '»' && nextIndex != '"' &&
+                        nextIndex != '\'' && nextIndex != ':' &&
+                        nextIndex != '!' && nextIndex != '?')
+                    count = count + 1;
             }
+            if (count > maxCount) {
+                maxCount = count;
+                shift = j;
+            }
+        }
 
+        return decryption(text, shift);
+    }
 }
