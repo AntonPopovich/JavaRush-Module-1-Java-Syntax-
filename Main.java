@@ -1,10 +1,3 @@
-
-/*
-Online Java - IDE, Code Editor, Compiler
-
-Online Java is a quick and easy tool that helps you to build, compile, test your programs online.
-*/
-
 import java.io.IOException;
 import java.util.Scanner;
 
