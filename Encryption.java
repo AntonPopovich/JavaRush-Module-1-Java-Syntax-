@@ -63,33 +63,30 @@ public class Encryption {
         return decryptedText;
     }
 
-
     public static int keyValidation() {
         System.out.println("Введите ключ: ");
         Scanner sc = new Scanner(System.in);
         int key = sc.nextInt();
 
         while (true) {
-            if (key >= 0 && key <= 39)
+            if (key >= 0 && key <= ALPHABET_length - 1)
                 break;
             else {
                 System.out.println("Неверное значение. Повторите ввод. Убедитесь, что значение соответствует " +
-                        "диапазону от 0 до 39.");
+                        "диапазону от 0 до " + (ALPHABET_length - 1) + ".");
                 key = sc.nextInt();
             }
         }
-
         return key;
     }
 
     public static String bruteForce(String text) throws ArrayIndexOutOfBoundsException {
-
         String decryptedText = "";
         int shift = 0;
         int maxCount = 0;
 
         for (int j = 0; j < ALPHABET.length; j++) {
-
+            System.out.println("Проверка ключа: " + (j + 1) + " из " + ALPHABET_length + ".");
             String iteration = decryption(text, j);
             int count = 0;
 
@@ -108,7 +105,6 @@ public class Encryption {
                 shift = j;
             }
         }
-
         return decryption(text, shift);
     }
 }
